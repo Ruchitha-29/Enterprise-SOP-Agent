@@ -3,8 +3,8 @@ import multer from 'multer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-import { uploadSop } from '../controllers/uploadController.js';
-import { authenticate, requireAdmin } from '../middleware/authMiddleware.js';
+import { uploadDocument } from '../controllers/uploadController.js';
+import { authenticate } from '../middleware/authMiddleware.js';
 
 const router = Router();
 
@@ -32,9 +32,9 @@ const fileFilter = (req, file, cb) => {
 
 const upload = multer({ storage, fileFilter });
 
-// POST /api/upload/sop
-// Admin-only route to upload SOP PDFs
-router.post('/sop', authenticate, requireAdmin, upload.single('file'), uploadSop);
+// POST /api/upload
+// Authenticated route to upload PDFs for ingestion
+router.post('/', authenticate, upload.single('file'), uploadDocument);
 
 export default router;
 

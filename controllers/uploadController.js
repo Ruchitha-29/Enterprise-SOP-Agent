@@ -1,35 +1,60 @@
-import pdfParse from 'pdf-parse';
-import fs from 'fs/promises';
+import fs from "fs/promises";
+import { parsePDF } from "../utils/pdfParser.js";
+import { chunkText } from "../utils/chunker.js";
+import { DocumentChunk } from "../models/DocumentChunk.js";
 
-// NOTE: Chunking, embeddings, and MongoDB Atlas Vector Search will be added later.
-
-export async function uploadSop(req, res, next) {
-  if (!req.file) {
-    return res.status(400).json({ message: 'No file uploaded' });
-  }
-
-  const filePath = req.file.path;
-
+export const uploadDocument = async (req, res, next) => {
   try {
-    const fileBuffer = await fs.readFile(filePath);
-    const parsed = await pdfParse(fileBuffer);
+    if (!req.file) {
+      return res.status(400).json({ message: "No file uploaded" });
+    }
 
-    // Placeholder: just return basic info, no DB writes yet
+    const filePath = req.file.path;
+    const documentName = req.file.originalname;
+
+    // Read file
+    const fileBuffer = await fs.readFile(filePath);
+
+    // Extract text from PDF
+    const { text, numPages } = await parsePDF(fileBuffer);
+
+    if (!text) {
+      return res
+        .status(400)
+        .json({ message: "No text content found in PDF" });
+    }
+
+    // Chunk text
+    const chunks = chunkText(text, 1000, 100);
+
+    if (chunks.length === 0) {
+      return res
+        .status(400)
+        .json({ message: "No chunks generated from PDF" });
+    }
+
+    // Prepare documents
+    const docsToInsert = chunks.map((content, index) => ({
+      documentName,
+      pageNumber: null,
+      chunkIndex: index,
+      content,
+      embedding: [],
+    }));
+
+    // Insert into MongoDB
+    const inserted = await DocumentChunk.insertMany(docsToInsert);
+
+    // Cleanup temp file
+    await fs.unlink(filePath);
+
     return res.status(201).json({
-      message: 'SOP uploaded successfully (RAG processing TBD)',
-      fileName: req.file.originalname,
-      numPages: parsed.numpages,
-      textPreview: parsed.text.slice(0, 500),
+      message: "Document ingested successfully",
+      fileName: documentName,
+      numPages,
+      chunksCreated: inserted.length,
     });
   } catch (error) {
-    return next(error);
-  } finally {
-    // Clean up temp file
-    try {
-      await fs.unlink(filePath);
-    } catch {
-      // ignore
-    }
+    next(error);
   }
-}
-
+};
