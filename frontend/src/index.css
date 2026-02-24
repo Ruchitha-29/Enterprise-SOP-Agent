@@ -1,0 +1,8 @@
+@import "tailwindcss";
+
+/* Global Base Styling */
+body {
+  background-color: #0a0a0a;
+  color: white;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
