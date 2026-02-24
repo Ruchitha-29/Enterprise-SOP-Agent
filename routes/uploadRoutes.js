@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 
 import { uploadDocument } from '../controllers/uploadController.js';
 import { authenticate } from '../middleware/authMiddleware.js';
+import { authorizeRoles } from '../middleware/roleMiddleware.js';
 
 const router = Router();
 
@@ -33,8 +34,14 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({ storage, fileFilter });
 
 // POST /api/upload
-// Authenticated route to upload PDFs for ingestion
-router.post('/', authenticate, upload.single('file'), uploadDocument);
+// Authenticated route to upload PDFs for ingestion (admin & company roles only)
+router.post(
+  '/',
+  authenticate,
+  authorizeRoles('admin', 'company'),
+  upload.single('file'),
+  uploadDocument,
+);
 
 export default router;
 

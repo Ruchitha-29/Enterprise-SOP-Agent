@@ -1,10 +1,12 @@
 import { generateEmbedding } from "./embeddingService.js";
 import { DocumentChunk } from "../models/DocumentChunk.js";
 
-export async function retrieveRelevantChunks(query, topK = 5) {
+export async function retrieveRelevantChunks(query, user, topK = 5) {
   if (!query || typeof query !== "string") {
     throw new Error("Invalid query input");
   }
+
+  const limit = typeof topK === "number" && topK > 0 ? topK : 5;
 
   console.log("🔎 Generating query embedding...");
   const queryEmbedding = await generateEmbedding(query);
@@ -17,27 +19,46 @@ export async function retrieveRelevantChunks(query, topK = 5) {
 
   console.log("🚀 Running vector search...");
 
-  const results = await DocumentChunk.aggregate([
+  const pipeline = [
     {
       $vectorSearch: {
         index: "default", // MUST match Atlas index name
         path: "embedding",
         queryVector: queryEmbedding,
-        numCandidates: 100,
-        limit: topK,
+        numCandidates: 200,
+        limit,
       },
     },
+  ];
+
+  // Always filter by companyId BEFORE projection
+  if (user?.companyId) {
+    pipeline.push({
+      $match: {
+        companyId: user.companyId,
+      },
+    });
+  }
+
+  // Ensure explicit sort by vectorSearchScore desc
+  pipeline.push(
+    {
+      $addFields: {
+        score: { $meta: "vectorSearchScore" },
+      },
+    },
+    { $sort: { score: -1 } },
     {
       $project: {
         _id: 0,
         documentName: 1,
         content: 1,
-        score: { $meta: "vectorSearchScore" },
+        score: 1,
       },
     },
-  ]);
+  );
 
-  console.log("Vector search results:", results);
+  const results = await DocumentChunk.aggregate(pipeline);
 
   return results || [];
 }

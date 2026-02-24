@@ -33,13 +33,10 @@ const app = express();
 app.use(helmet());
 
 // CORS – adjust origins as needed
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
-    credentials: true,
-  }),
-);
-
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 // Logging
 if (process.env.NODE_ENV !== 'test') {
   app.use(morgan('dev'));

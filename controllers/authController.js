@@ -1,5 +1,5 @@
-import { User } from '../models/User.js';
-import { signAccessToken } from '../utils/jwt.js';
+import { User } from "../models/User.js";
+import { signAccessToken } from "../utils/jwt.js";
 
 function sanitizeUser(user) {
   return {
@@ -7,6 +7,7 @@ function sanitizeUser(user) {
     name: user.name,
     email: user.email,
     role: user.role,
+    companyId: user.companyId,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };
@@ -14,27 +15,40 @@ function sanitizeUser(user) {
 
 export async function register(req, res, next) {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, companyId } = req.body;
 
     if (!name || !email || !password) {
-      return res.status(400).json({ message: 'Name, email, and password are required' });
+      return res
+        .status(400)
+        .json({ message: "Name, email, and password are required" });
     }
 
     const existing = await User.findOne({ email });
     if (existing) {
-      return res.status(409).json({ message: 'Email already registered' });
+      return res.status(409).json({ message: "Email already registered" });
     }
 
     const passwordHash = await User.hashPassword(password);
 
-    const user = await User.create({
+    let user = await User.create({
       name,
       email,
       passwordHash,
-      role: role || 'admin',
+      role: role || "admin",
+      companyId,
     });
 
-    const token = signAccessToken({ sub: user._id.toString(), role: user.role });
+    // If no companyId provided, default each new user to their own company scope
+    if (!user.companyId) {
+      user.companyId = user._id.toString();
+      await user.save();
+    }
+
+    const token = signAccessToken({
+      sub: user._id.toString(),
+      role: user.role,
+      companyId: user.companyId,
+    });
 
     return res.status(201).json({
       user: sanitizeUser(user),
@@ -50,20 +64,31 @@ export async function login(req, res, next) {
     const { email, password } = req.body;
 
     if (!email || !password) {
-      return res.status(400).json({ message: 'Email and password are required' });
+      return res
+        .status(400)
+        .json({ message: "Email and password are required" });
     }
 
     const user = await User.findOne({ email });
     if (!user) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
     const isMatch = await user.comparePassword(password);
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid credentials' });
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = signAccessToken({ sub: user._id.toString(), role: user.role });
+    if (!user.companyId) {
+      user.companyId = user._id.toString();
+      await user.save();
+    }
+
+    const token = signAccessToken({
+      sub: user._id.toString(),
+      role: user.role,
+      companyId: user.companyId,
+    });
 
     return res.status(200).json({
       user: sanitizeUser(user),

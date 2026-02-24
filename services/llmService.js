@@ -1,28 +1,7 @@
-export async function generateAnswer(question, contextChunks) {
-  if (!question) {
-    throw new Error("Question is required");
+export async function generateAnswer(prompt) {
+  if (!prompt || typeof prompt !== "string") {
+    throw new Error("Prompt is required");
   }
-
-  const context = contextChunks
-    .map((chunk, index) => `Context ${index + 1}:\n${chunk.content}`)
-    .join("\n\n");
-
-  const prompt = `
-You are an intelligent assistant.
-
-Use ONLY the provided context to answer the question.
-If the answer is not found in the context, say:
-"I don't know based on the provided document."
-
----------------------
-${context}
----------------------
-
-Question:
-${question}
-
-Answer:
-`;
 
   const response = await fetch("http://localhost:11434/api/generate", {
     method: "POST",

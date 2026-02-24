@@ -26,6 +26,9 @@ const documentChunkSchema = new Schema(
       type: [Number],
       default: [],
     },
+    companyId: {
+      type: String,
+    },
   },
   {
     timestamps: true,

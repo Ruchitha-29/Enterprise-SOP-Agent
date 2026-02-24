@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 
 const { Schema } = mongoose;
 
@@ -23,13 +23,16 @@ const userSchema = new Schema(
     },
     role: {
       type: String,
-      enum: ['admin', 'user'],
-      default: 'admin',
+      enum: ["admin", "company", "user"],
+      default: "user",
+    },
+    companyId: {
+      type: String,
     },
   },
   {
     timestamps: true,
-  },
+  }
 );
 
 userSchema.methods.comparePassword = async function comparePassword(plainPassword) {
@@ -41,5 +44,5 @@ userSchema.statics.hashPassword = async function hashPassword(plainPassword) {
   return bcrypt.hash(plainPassword, salt);
 };
 
-export const User = mongoose.models.User || mongoose.model('User', userSchema);
+export const User = mongoose.models.User || mongoose.model("User", userSchema);
 

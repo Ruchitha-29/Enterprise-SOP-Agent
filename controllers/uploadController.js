@@ -71,6 +71,7 @@ export const uploadDocument = async (req, res, next) => {
         chunkIndex: index,
         content: chunk,
         embedding,
+        companyId: req.user?.companyId || req.user?.id || req.user?._id?.toString?.(),
         createdAt: new Date(),
       });
     }
