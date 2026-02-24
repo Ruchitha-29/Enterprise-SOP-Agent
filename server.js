@@ -1,11 +1,15 @@
-import dotenv from 'dotenv';
+import "dotenv/config";
+
+console.log("🔥 SERVER STARTED 🔥");
+console.log("GEMINI KEY LOADED:", !!process.env.GEMINI_API_KEY);
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
 // Resolve .env relative to this file (backend/.env), independent of working directory
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-dotenv.config({ path: path.join(__dirname, '.env') });
+
 // Temporary debug check for Mongo URI – remove once verified
 // eslint-disable-next-line no-console
 console.log('ENV CHECK:', process.env.MONGO_URI);

@@ -1,11 +1,11 @@
 import { ChatSession } from '../models/ChatSession.js';
 
-// Placeholder chat endpoint: no RAG, no Gemini integration yet.
+// Placeholder chat endpoint: no RAG or LLM integration yet.
 // This will later:
 // - Embed the user query
 // - Run MongoDB Atlas Vector Search over DocumentChunk
 // - Build a context window
-// - Call Gemini 1.5 Flash with strict context grounding
+// - Call an LLM with strict context grounding
 // - Stream response via SSE with citations
 
 export async function basicChat(req, res, next) {
@@ -32,9 +32,9 @@ export async function basicChat(req, res, next) {
       await session.save();
     }
 
-    // Placeholder assistant reply – to be replaced with Gemini + RAG
+    // Placeholder assistant reply – to be replaced with RAG + LLM integration
     const assistantReply =
-      'This is a placeholder response. The RAG pipeline and Gemini integration are not implemented yet.';
+      'This is a placeholder response. The RAG pipeline and LLM integration are not implemented yet.';
 
     session.messages.push({ role: 'assistant', content: assistantReply });
     await session.save();
@@ -62,7 +62,7 @@ export function chatStreamPlaceholder(req, res) {
     'data: ' +
       JSON.stringify({
         message:
-          'Streaming is not yet implemented. This endpoint will stream Gemini responses in a future version.',
+          'Streaming is not yet implemented. This endpoint will stream LLM responses in a future version.',
       }) +
       '\n\n',
   );

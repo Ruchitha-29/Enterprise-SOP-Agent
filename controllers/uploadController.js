@@ -2,51 +2,86 @@ import fs from "fs/promises";
 import { parsePDF } from "../utils/pdfParser.js";
 import { chunkText } from "../utils/chunker.js";
 import { DocumentChunk } from "../models/DocumentChunk.js";
+import { generateEmbedding } from "../services/embeddingService.js";
 
 export const uploadDocument = async (req, res, next) => {
+  let filePath;
+
   try {
     if (!req.file) {
       return res.status(400).json({ message: "No file uploaded" });
     }
 
-    const filePath = req.file.path;
+    filePath = req.file.path;
     const documentName = req.file.originalname;
 
-    // Read file
+    console.log("📄 Uploading:", documentName);
+
+    // Read uploaded file
     const fileBuffer = await fs.readFile(filePath);
 
     // Extract text from PDF
     const { text, numPages } = await parsePDF(fileBuffer);
 
-    if (!text) {
-      return res
-        .status(400)
-        .json({ message: "No text content found in PDF" });
+    if (!text || !text.trim()) {
+      return res.status(400).json({
+        message: "No text content found in PDF",
+      });
     }
+
+    console.log("📝 Extracted text length:", text.length);
 
     // Chunk text
-    const chunks = chunkText(text, 1000, 100);
+    const rawChunks = chunkText(text, 1000, 100);
+
+    // Filter out blank or tiny chunks (<50 chars)
+    const chunks = rawChunks.filter(
+      (chunk) => chunk && chunk.trim()
+    );
 
     if (chunks.length === 0) {
-      return res
-        .status(400)
-        .json({ message: "No chunks generated from PDF" });
+      return res.status(400).json({
+        message: "No valid chunks generated from PDF",
+      });
     }
 
-    // Prepare documents
-    const docsToInsert = chunks.map((content, index) => ({
-      documentName,
-      pageNumber: null,
-      chunkIndex: index,
-      content,
-      embedding: [],
-    }));
+    console.log("📦 Total chunks:", chunks.length);
 
-    // Insert into MongoDB
+    const docsToInsert = [];
+
+    for (let index = 0; index < chunks.length; index += 1) {
+      const chunk = chunks[index];
+
+      console.log(`🔹 Processing chunk ${index}`);
+
+      const embedding = await generateEmbedding(chunk);
+
+      if (!embedding || !Array.isArray(embedding)) {
+        throw new Error(`Invalid embedding for chunk ${index}`);
+      }
+
+      console.log(
+        `✅ Chunk ${index} embedding length:`,
+        embedding.length
+      );
+
+      docsToInsert.push({
+        documentName,
+        pageNumber: null,
+        chunkIndex: index,
+        content: chunk,
+        embedding,
+        createdAt: new Date(),
+      });
+    }
+
+    // Remove old chunks of same document
+    await DocumentChunk.deleteMany({ documentName });
+
+    // Insert new chunks
     const inserted = await DocumentChunk.insertMany(docsToInsert);
 
-    // Cleanup temp file
-    await fs.unlink(filePath);
+    console.log("🎉 Inserted documents:", inserted.length);
 
     return res.status(201).json({
       message: "Document ingested successfully",
@@ -55,6 +90,16 @@ export const uploadDocument = async (req, res, next) => {
       chunksCreated: inserted.length,
     });
   } catch (error) {
+    console.error("❌ Upload error:", error.message);
     next(error);
+  } finally {
+    // Always cleanup temp file
+    if (filePath) {
+      try {
+        await fs.unlink(filePath);
+      } catch (err) {
+        console.warn("⚠️ Could not delete temp file");
+      }
+    }
   }
 };
