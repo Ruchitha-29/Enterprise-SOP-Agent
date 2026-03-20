@@ -16,8 +16,11 @@ The system uses Retrieval-Augmented Generation (RAG) to retrieve relevant docume
 Organizations store huge amounts of knowledge in documents such as:
 
 📄 Policy Documents
+
 📘 Technical Manuals
+
 📊 Reports
+
 📚 Knowledge Base Articles
 
 Traditional keyword search often fails to capture context and meaning.
@@ -25,6 +28,7 @@ Traditional keyword search often fails to capture context and meaning.
 OpsMind AI solves this using semantic search + AI reasoning.
 
 🌟 Key Features
+
 🤖 AI-Powered Knowledge Chat
 
 Ask questions about company documents and get instant answers.
@@ -75,27 +79,35 @@ AI Generated Answer
       ▼
 Streaming Response to Chat UI
 🛠 Tech Stack
+
 💻 Frontend
 
 ⚛ React (Vite)
+
 🎨 Tailwind CSS
+
 🔗 Axios
 
 ⚙ Backend
 
 🟢 Node.js
+
 🚂 Express.js
+
 🧠 LangChain.js
 
 🤖 AI / LLM
 
 🔹 Retrieval-Augmented Generation (RAG)
+
 🔹 Gemini / Llama 3 APIs
+
 🔹 Embedding Models
 
 🗄 Database
 
 🍃 MongoDB
+
 🔍 MongoDB Atlas Vector Search
 
 🔐 Authentication
@@ -124,6 +136,7 @@ OpsMind-AI
 ├── README.md
 └── package.json
 🔄 RAG Pipeline Workflow
+
 1️⃣ Document Upload
 
 Users upload company PDFs.
@@ -157,6 +170,7 @@ Vector search retrieves the most relevant document chunks.
 Context + query is sent to the LLM to generate an answer.
 
 ⚙ Installation
+
 1️⃣ Clone the Repository
 git clone https://github.com/yourusername/opsmind-ai.git
 cd opsmind-ai
