@@ -135,6 +135,7 @@ OpsMind-AI
 ├── uploads
 ├── README.md
 └── package.json
+
 🔄 RAG Pipeline Workflow
 
 1️⃣ Document Upload
