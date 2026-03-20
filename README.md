@@ -1,118 +1,94 @@
-🚀 OpsMind AI
-🧠 Context-Aware Corporate Knowledge Brain
+🧠 OpsMind AI
+Context-Aware Corporate Knowledge Brain
+<p align="center">
 
+
+
+
+
+
+
+
+</p> <p align="center"> AI-powered enterprise knowledge assistant that enables employees to query internal documents using natural language. </p>
 ✨ Overview
 
-OpsMind AI is an intelligent corporate knowledge assistant that allows employees to interact with internal company documents using natural language.
+OpsMind AI is an AI-driven knowledge retrieval system that allows organizations to interact with internal documentation using natural language queries.
 
-Instead of manually searching through long PDFs, manuals, or policy documents, users can simply ask questions and receive context-aware answers powered by AI.
+Instead of manually searching through PDFs, reports, and manuals, users can simply ask questions and receive accurate, context-aware responses generated using Retrieval-Augmented Generation (RAG).
 
-The system uses Retrieval-Augmented Generation (RAG) to retrieve relevant document information and generate accurate responses using Large Language Models (LLMs).
+The system combines vector search, document retrieval, and large language models to provide reliable answers grounded in company knowledge.
 
-💡 Think of it as ChatGPT for your company's internal knowledge.
+🚀 Key Features
 
-🎯 Problem Statement
+• AI Knowledge Chat – Ask questions about internal company documents
 
-Organizations store huge amounts of knowledge in documents such as:
+• RAG Pipeline – Combines document retrieval with LLM reasoning
 
-📄 Policy Documents
+• Semantic Vector Search – Fast similarity search using MongoDB Atlas
 
-📘 Technical Manuals
+• PDF Document Ingestion – Automatic text extraction and indexing
 
-📊 Reports
+• Multi-Tenant Architecture – Secure company-level data isolation
 
-📚 Knowledge Base Articles
+• JWT Authentication – Secure login and role-based access
 
-Traditional keyword search often fails to capture context and meaning.
+• Streaming Responses – Real-time AI responses using SSE
 
-OpsMind AI solves this using semantic search + AI reasoning.
-
-🌟 Key Features
-
-🤖 AI-Powered Knowledge Chat
-
-Ask questions about company documents and get instant answers.
-
-🔎 Semantic Vector Search
-
-Uses MongoDB Atlas Vector Search to retrieve contextually relevant information.
-
-📄 PDF Document Ingestion
-
-Upload documents which are automatically processed and indexed.
-
-🧠 Retrieval-Augmented Generation (RAG)
-
-Combines retrieval + LLM reasoning to generate accurate answers.
-
-🔐 Secure Authentication
-
-JWT-based login and role-based access control.
-
-🏢 Multi-Tenant Architecture
-
-Ensures company-level data isolation.
-
-⚡ Real-Time Streaming
-
-AI responses are streamed using Server-Sent Events (SSE) for smooth chat experience.
-
-🏗 System Architecture
-User Question
-      │
-      ▼
+🏗 Architecture
+User Query
+   │
+   ▼
 Query Embedding Generation
-      │
-      ▼
+   │
+   ▼
 Vector Similarity Search
 (MongoDB Atlas Vector DB)
-      │
-      ▼
+   │
+   ▼
 Relevant Document Chunks Retrieved
-      │
-      ▼
+   │
+   ▼
 Context + Query → LLM
-      │
-      ▼
-AI Generated Answer
-      │
-      ▼
-Streaming Response to Chat UI
+   │
+   ▼
+Generated AI Response
+   │
+   ▼
+Streamed to Chat Interface
 🛠 Tech Stack
+Frontend
 
-💻 Frontend
+React (Vite)
 
-⚛ React (Vite)
+Tailwind CSS
 
-🎨 Tailwind CSS
+Axios
 
-🔗 Axios
+Backend
 
-⚙ Backend
+Node.js
 
-🟢 Node.js
+Express.js
 
-🚂 Express.js
+LangChain.js
 
-🧠 LangChain.js
+AI / ML
 
-🤖 AI / LLM
+Retrieval-Augmented Generation (RAG)
 
-🔹 Retrieval-Augmented Generation (RAG)
+LLM APIs (Gemini / Llama 3)
 
-🔹 Gemini / Llama 3 APIs
+Embedding Models
 
-🔹 Embedding Models
+Database
 
-🗄 Database
+MongoDB
 
-🍃 MongoDB
+MongoDB Atlas Vector Search
 
-🔍 MongoDB Atlas Vector Search
+Authentication
 
-🔐 Authentication
-
-🔑 JWT (JSON Web Tokens)
+JSON Web Tokens (JWT)
 
 📂 Project Structure
 OpsMind-AI
@@ -129,87 +105,73 @@ OpsMind-AI
 │   ├── src
 │   │   ├── components
 │   │   ├── pages
-│   │   ├── services
-│   │   └── App.jsx
+│   │   └── services
 │
 ├── uploads
-├── README.md
-└── package.json
-
-🔄 RAG Pipeline Workflow
-
-1️⃣ Document Upload
-
-Users upload company PDFs.
-
-2️⃣ Text Extraction
-
-Text is extracted from the document.
-
-3️⃣ Chunking
-
-Large documents are split into smaller pieces.
-
-4️⃣ Embedding Generation
-
-Each chunk is converted into a vector embedding.
-
-5️⃣ Vector Storage
-
-Embeddings are stored in MongoDB Atlas Vector Database.
-
-6️⃣ Query Processing
-
-User query → converted into embedding.
-
-7️⃣ Semantic Retrieval
-
-Vector search retrieves the most relevant document chunks.
-
-8️⃣ AI Response Generation
-
-Context + query is sent to the LLM to generate an answer.
-
+└── README.md
 ⚙ Installation
+1️⃣ Clone Repository
 
-1️⃣ Clone the Repository
 git clone https://github.com/yourusername/opsmind-ai.git
+
 cd opsmind-ai
-🖥 Backend Setup
+
+2️⃣ Backend Setup
+
 cd backend
+
 npm install
 
 Create .env
 
 PORT=5000
-MONGO_URI=your_mongodb_uri
-JWT_SECRET=your_secret_key
+
+MONGO_URI=your_mongodb_connection
+
+JWT_SECRET=your_secret
+
 GEMINI_API_KEY=your_api_key
+
 GROQ_API_KEY=your_api_key
 
 Run backend
 
 npm run dev
-🌐 Frontend Setup
+3️⃣ Frontend Setup
+
 cd frontend
+
 npm install
+
 npm run dev
 
-🚀 Future Improvements
 
-🔹 Hybrid Search (Vector + Keyword)
-🔹 Conversation Memory
-🔹 Advanced Analytics Dashboard
-🔹 Multi-document summarization
-🔹 Cloud Deployment with Docker
+🔄 RAG Workflow
 
-📚 Learning Outcomes
+Upload company documents (PDFs)
 
-Through this project I gained hands-on experience in:
+Extract text and split into smaller chunks
 
-🧠 Retrieval-Augmented Generation
-📊 Vector Databases
-🤖 LLM Integration
-⚙ Full Stack MERN Development
-🔐 Authentication Systems
-🏗 AI System Architecture
+Generate vector embeddings for each chunk
+
+Store embeddings in MongoDB Atlas Vector Database
+
+Convert user query to embedding
+
+Retrieve relevant document chunks via vector search
+
+Provide retrieved context to LLM
+
+LLM generates a context-aware response
+
+📈 Future Improvements
+
+Hybrid Search (Vector + Keyword)
+
+Conversation Memory
+
+Advanced Admin Dashboard
+
+Multi-document summarization
+
+Cloud deployment
